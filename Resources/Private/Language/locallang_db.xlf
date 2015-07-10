@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="messages" date="2015-07-10T10:18:50Z" product-name="px_ipauth">
+		<header/>
+		<body>
+            <!-- be_users -->
+            <trans-unit id="be_users.tx_pxipauth_ip_list">
+                <source>IP access (192.168.*.*,10.0.0.0/24)</source>
+            </trans-unit>
+            <trans-unit id="be_users.tx_pxipauth_mode">
+                <source>IP Auto-Login Mode</source>
+            </trans-unit>
+            <trans-unit id="be_users.tx_pxipauth_mode.I.auto">
+                <source>IP Auto-Login if possible</source>
+            </trans-unit>
+            <trans-unit id="be_users.tx_pxipauth_mode.I.auto_only">
+                <source>Only IP Auto-Login</source>
+            </trans-unit>
+		</body>
+	</file>
+</xliff>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" target-language="de" datatype="plaintext" original="messages" date="2014-05-02T12:00:00Z" product-name="powermail">
+		<header/>
+		<body>
+            <!-- be_users -->
+            <trans-unit id="be_users.tx_pxipauth_ip_list">
+                <source>IP access (192.168.*.*,10.0.0.0/24)</source>
+                <target state="translated">IP Zugriff (192.168.*.*,10.0.0.0/24)</target>
+            </trans-unit>
+            <trans-unit id="be_users.tx_pxipauth_mode">
+                <source>IP Auto-Login Mode</source>
+                <target state="translated">IP Auto-Login Mode</target>
+            </trans-unit>
+            <trans-unit id="be_users.tx_pxipauth_mode.I.auto">
+                <source>IP Auto-Login if possible</source>
+                <target state="translated">IP Auto-Login wenn möglich</target>
+            </trans-unit>
+            <trans-unit id="be_users.tx_pxipauth_mode.I.auto_only">
+                <source>Only IP Auto-Login</source>
+                <target state="translated">Ausschliesslich IP Auto-Login</target>
+            </trans-unit>
+		</body>
+	</file>
+</xliff>
