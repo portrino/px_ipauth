@@ -54,13 +54,24 @@ class IpAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthenticationServic
     const LOGIN_MODE_AUTO_ONLY = 2;
 
     /**
+     * @var array
+     */
+    protected $extConf;
+
+    public function init() {
+        $this->extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['px_ipauth']);
+        return parent::init();
+    }
+
+
+    /**
      * Find a user by IP ('REMOTE_ADDR')
      *
      * @return    mixed    user array or false
      */
     function getUser()    {
         $matchingUsers = array();
-        $baseIP = $this->authInfo['REMOTE_ADDR'];
+        $clientIP = $this->getClientIp();
             // get all users
         $dbres = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
             '*',
@@ -72,7 +83,7 @@ class IpAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthenticationServic
 
         if ($dbres) {
             while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($dbres))    {
-                if(GeneralUtility::cmpIP($baseIP, $row['tx_pxipauth_ip_list']))     {
+                if(GeneralUtility::cmpIP($clientIP, $row['tx_pxipauth_ip_list']))     {
                     $matchingUsers[] = $row;
                 }
             }
@@ -89,7 +100,7 @@ class IpAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthenticationServic
             foreach ($matchingUsers as $matchingUser) {
                 $values = \TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $matchingUser['tx_pxipauth_ip_list'], TRUE);
                 foreach ($values as $value) {
-                    if (ip2long($value) != FALSE && ip2long($value) === ip2long($baseIP)) {
+                    if (ip2long($value) != FALSE && ip2long($value) === ip2long($clientIP)) {
                         return $matchingUser;
                     }
                 }
@@ -112,7 +123,7 @@ class IpAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthenticationServic
      * @param    array     Data of user.
      * @return    boolean
      */    
-    function authUser($user)    {
+    function authUser($user) {
         $ret = self::STATUS_AUTHENTICATION_SUCCESS_CONTINUE;
             // any auto option set?
         if ($user['tx_pxipauth_mode'] > 0) {
@@ -121,12 +132,12 @@ class IpAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthenticationServic
                 // auto IP login only
             if ($user['tx_pxipauth_mode'] == self::LOGIN_MODE_AUTO_ONLY) {
                     // we check always - also without an given IP
-                $ret= \TYPO3\CMS\Core\Utility\GeneralUtility::cmpIP($this->authInfo['REMOTE_ADDR'], $IPList);
+                $ret= \TYPO3\CMS\Core\Utility\GeneralUtility::cmpIP($this->getClientIp(), $IPList);
                 $ret = $ret ? self::STATUS_AUTHENTICATION_SUCCESS_BREAK : self::STATUS_AUTHENTICATION_FAILURE_BREAK;
                 
                 // this option is checked with an given IP only
             } elseif($IPList) {
-                $ret= \TYPO3\CMS\Core\Utility\GeneralUtility::cmpIP($this->authInfo['REMOTE_ADDR'], $IPList);
+                $ret= \TYPO3\CMS\Core\Utility\GeneralUtility::cmpIP($this->getClientIp(), $IPList);
                 $ret = $ret  ? self::STATUS_AUTHENTICATION_SUCCESS_BREAK : self::STATUS_AUTHENTICATION_SUCCESS_CONTINUE;
             }
         }
@@ -142,9 +153,19 @@ class IpAuthenticationService extends \TYPO3\CMS\Sv\AbstractAuthenticationServic
         }
 
         return $ret;
-    }    
+    }
 
-
+    /**
+     * Return clients IP address.
+     *
+     * @return string
+     */
+    private function getClientIp() {
+        if ((boolean)$this->extConf['x_forwarded_for'] && isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            return $_SERVER['HTTP_X_FORWARDED_FOR'];
+        }
+        return $this->authInfo['REMOTE_ADDR'];
+    }
 
     /**
      * fetch groups by ip

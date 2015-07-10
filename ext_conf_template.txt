@@ -1,0 +1,2 @@
+# cat=basic; type=boolean; label=Use HTTP_X_FORWARDED_FOR for client ip evaluation.
+x_forwarded_for = 0
